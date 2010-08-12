@@ -1,6 +1,6 @@
-def class_exists?(class_name)
-  klass = Module.const_get(class_name)
-  return klass.is_a?(Class)
+def module_exists?(module_name)
+  klass = Module.const_get(module_name)
+  return klass.is_a?(Module)
 rescue NameError
   return false
 end
@@ -22,7 +22,7 @@ if defined?(ActiveRecord::Base)
     if Cucumber::Rails::World.use_transactional_fixtures
       run_callbacks :setup if respond_to?(:run_callbacks)
     else
-      DatabaseCleaner.start if class_exists?("DatabaseCleaner")
+      DatabaseCleaner.start if module_exists?("DatabaseCleaner")
     end
     ActionMailer::Base.deliveries = [] if defined?(ActionMailer::Base)
   end
@@ -31,7 +31,7 @@ if defined?(ActiveRecord::Base)
     if Cucumber::Rails::World.use_transactional_fixtures
       run_callbacks :teardown if respond_to?(:run_callbacks)
     else
-      DatabaseCleaner.clean if class_exists?("DatabaseCleaner")
+      DatabaseCleaner.clean if module_exists?("DatabaseCleaner")
     end
   end
 else
