@@ -1,3 +1,10 @@
+def class_exists?(class_name)
+  klass = Module.const_get(class_name)
+  return klass.is_a?(Class)
+rescue NameError
+  return false
+end
+
 if defined?(ActiveRecord::Base)
   Before do
     $__cucumber_global_use_txn = !!Cucumber::Rails::World.use_transactional_fixtures if $__cucumber_global_use_txn.nil?
@@ -15,7 +22,7 @@ if defined?(ActiveRecord::Base)
     if Cucumber::Rails::World.use_transactional_fixtures
       run_callbacks :setup if respond_to?(:run_callbacks)
     else
-      DatabaseCleaner.start
+      DatabaseCleaner.start if class_exists?("DatabaseCleaner")
     end
     ActionMailer::Base.deliveries = [] if defined?(ActionMailer::Base)
   end
@@ -24,7 +31,7 @@ if defined?(ActiveRecord::Base)
     if Cucumber::Rails::World.use_transactional_fixtures
       run_callbacks :teardown if respond_to?(:run_callbacks)
     else
-      DatabaseCleaner.clean
+      DatabaseCleaner.clean if class_exists?("DatabaseCleaner")
     end
   end
 else
@@ -32,3 +39,4 @@ else
     def World.fixture_table_names; []; end # Workaround for projects that don't use ActiveRecord
   end
 end
+
